@@ -1,0 +1,23 @@
+body {
+ margin: 0;
+ padding: 20px 50px;
+ /* background-color: black; */
+}
+
+.list {
+ position: relative;
+ display: flex;
+ flex-direction: column;
+ padding: 0;
+ border-bottom: 1px solid #000;
+}
+
+.item {
+ width: 100%;
+ font-size: 30px;
+ list-style-type: none;
+ border: 1px solid #000;
+ border-bottom: none;
+ user-select: none;
+ cursor: grab;
+}
