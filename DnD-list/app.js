@@ -14,7 +14,7 @@ function grabItem(e) {
   cloneItem.setAttribute(
    'style',
    `position: absolute; left: ${e.clientX - offsetX}px; top: ${
-    e.clientY - offsetY
+    e.clientY - offsetY + window.scrollY
    }px; border-bottom: 1px solid #000; pointer-events: none; opacity: 0.5;`
   );
  }
@@ -24,12 +24,12 @@ window.addEventListener('mousedown', (e) => {
  const listParam = list.getBoundingClientRect();
  currentItem = e.target.nodeName === 'LI' ? e.target : null;
  if (currentItem) {
+  let currentItemParams = currentItem.getBoundingClientRect();
   cloneItem = currentItem.cloneNode(true);
   cloneItem.style.display = 'none';
   list.append(cloneItem);
-  offsetY = listParam.top + e.clientY - currentItem.getBoundingClientRect().top;
-  offsetX =
-   listParam.left + e.clientX - currentItem.getBoundingClientRect().left;
+  offsetY = listParam.top + e.clientY - currentItemParams.top;
+  offsetX = listParam.left + e.clientX - currentItemParams.left;
   window.addEventListener('mousemove', grabItem);
  }
 });
@@ -47,8 +47,8 @@ window.addEventListener('mouseup', (e) => {
  if (currentItem) {
   currentItem.setAttribute('style', '');
   window.removeEventListener('mousemove', grabItem);
-  cloneItem.remove();
-  targetItem = null;
-  currentItem = null;
  }
+ cloneItem.remove();
+ targetItem = null;
+ currentItem = null;
 });
