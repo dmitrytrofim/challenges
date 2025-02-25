@@ -1,14 +1,17 @@
 const list = document.querySelector('.list');
 const items = [...document.querySelectorAll('.item')];
-const listParam = list.getBoundingClientRect();
 let currentItem = null;
 let targetItem = null;
+let cloneItem = null;
 let offsetX = null;
 let offsetY = null;
 
 function grabItem(e) {
+ if (e.target.nodeName === 'LI') {
+  targetItem = e.target;
+ }
  if (currentItem) {
-  currentItem.setAttribute(
+  cloneItem.setAttribute(
    'style',
    `position: absolute; left: ${e.clientX - offsetX}px; top: ${
     e.clientY - offsetY
@@ -18,8 +21,12 @@ function grabItem(e) {
 }
 
 window.addEventListener('mousedown', (e) => {
- currentItem = items.find((el) => el === e.target);
+ const listParam = list.getBoundingClientRect();
+ currentItem = e.target.nodeName === 'LI' ? e.target : null;
  if (currentItem) {
+  cloneItem = currentItem.cloneNode(true);
+  cloneItem.style.display = 'none';
+  list.append(cloneItem);
   offsetY = listParam.top + e.clientY - currentItem.getBoundingClientRect().top;
   offsetX =
    listParam.left + e.clientX - currentItem.getBoundingClientRect().left;
@@ -28,7 +35,6 @@ window.addEventListener('mousedown', (e) => {
 });
 
 window.addEventListener('mouseup', (e) => {
- targetItem = items.find((el) => el === e.target);
  if (targetItem) {
   const dir =
    e.clientY >
@@ -41,6 +47,8 @@ window.addEventListener('mouseup', (e) => {
  if (currentItem) {
   currentItem.setAttribute('style', '');
   window.removeEventListener('mousemove', grabItem);
+  cloneItem.remove();
+  targetItem = null;
   currentItem = null;
  }
 });
