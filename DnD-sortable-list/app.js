@@ -23,7 +23,7 @@ function grabItem(e) {
    'style',
    `position: absolute; left: ${e.clientX - offset.x}px; top: ${
     e.clientY - offset.y + scrollParams.finish
-   }px; border-bottom: 1px solid #000; pointer-events: none; opacity: 0.5;`
+   }px; border-bottom: 1px solid #000; pointer-events: none; opacity: 0.6;`
   );
  }
 }
@@ -59,7 +59,7 @@ window.addEventListener('mouseup', (e) => {
    : list.insertBefore(item.current, item.target);
  }
  if (item.current) {
-  item.current.setAttribute('style', '');
+  item.current.removeAttribute('style');
   window.removeEventListener('mousemove', grabItem);
   window.removeEventListener('scroll', getScrollOffset);
  }
