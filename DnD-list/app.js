@@ -1,54 +1,69 @@
 const list = document.querySelector('.list');
 const items = [...document.querySelectorAll('.item')];
-let currentItem = null;
-let targetItem = null;
-let cloneItem = null;
-let offsetX = null;
-let offsetY = null;
+const item = {
+ current: null,
+ target: null,
+ clone: null,
+};
+const offset = {
+ x: null,
+ y: null,
+};
+const scrollParams = {
+ start: 0,
+ finish: null,
+};
 
 function grabItem(e) {
  if (e.target.nodeName === 'LI') {
-  targetItem = e.target;
+  item.target = e.target;
  }
- if (currentItem) {
-  cloneItem.setAttribute(
+ if (item.current) {
+  item.clone.setAttribute(
    'style',
-   `position: absolute; left: ${e.clientX - offsetX}px; top: ${
-    e.clientY - offsetY + window.scrollY
+   `position: absolute; left: ${e.clientX - offset.x}px; top: ${
+    e.clientY - offset.y + scrollParams.finish
    }px; border-bottom: 1px solid #000; pointer-events: none; opacity: 0.5;`
   );
  }
 }
 
+function getScrollOffset() {
+ scrollParams.finish = window.scrollY - scrollParams.start;
+}
+
 window.addEventListener('mousedown', (e) => {
+ scrollParams.start = window.scrollY;
  const listParam = list.getBoundingClientRect();
- currentItem = e.target.nodeName === 'LI' ? e.target : null;
- if (currentItem) {
-  let currentItemParams = currentItem.getBoundingClientRect();
-  cloneItem = currentItem.cloneNode(true);
-  cloneItem.style.display = 'none';
-  list.append(cloneItem);
-  offsetY = listParam.top + e.clientY - currentItemParams.top;
-  offsetX = listParam.left + e.clientX - currentItemParams.left;
+ item.current = e.target.nodeName === 'LI' ? e.target : null;
+ if (item.current) {
+  let currentItemParams = item.current.getBoundingClientRect();
+  item.clone = item.current.cloneNode(true);
+  item.clone.style.display = 'none';
+  list.append(item.clone);
+  offset.y = listParam.top + e.clientY - currentItemParams.top;
+  offset.x = listParam.left + e.clientX - currentItemParams.left;
   window.addEventListener('mousemove', grabItem);
+  window.addEventListener('scroll', getScrollOffset);
  }
 });
 
 window.addEventListener('mouseup', (e) => {
- if (targetItem) {
+ if (item.target) {
   const dir =
    e.clientY >
-   targetItem.getBoundingClientRect().top +
-    targetItem.getBoundingClientRect().height / 2;
+   item.target.getBoundingClientRect().top +
+    item.target.getBoundingClientRect().height / 2;
   dir
-   ? list.insertBefore(currentItem, targetItem.nextSibling)
-   : list.insertBefore(currentItem, targetItem);
+   ? list.insertBefore(item.current, item.target.nextSibling)
+   : list.insertBefore(item.current, item.target);
  }
- if (currentItem) {
-  currentItem.setAttribute('style', '');
+ if (item.current) {
+  item.current.setAttribute('style', '');
   window.removeEventListener('mousemove', grabItem);
+  window.removeEventListener('scroll', getScrollOffset);
  }
- cloneItem.remove();
- targetItem = null;
- currentItem = null;
+ if (item.clone) item.clone.remove();
+ item.target = null;
+ item.current = null;
 });
